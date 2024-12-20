@@ -10,10 +10,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.models.ChatCompletion;
+import com.openai.models.ChatCompletionCreateParams;
+import com.openai.models.ChatCompletionMessageParam;
+import com.openai.models.ChatCompletionUserMessageParam;
+import com.openai.models.ChatModel;
+
+import java.util.List;
 
 @RestController
 public class HelloController {
-    
+    OpenAIClient client = OpenAIOkHttpClient.builder()
+    .apiKey("My API Key")
+    .build();
     public static class Hello {
         String greeting;
         String goodbye;
@@ -64,6 +75,20 @@ public class HelloController {
         
     
     // }
+    @GetMapping("/chat")
+    public String getMethodName() {
+
+        ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
+            .message(List.of(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(ChatCompletionUserMessageParam.builder()
+                .role(ChatCompletionUserMessageParam.Role.USER)
+                .content(ChatCompletionUserMessageParam.Content.ofTextContent("Say this is a test"))
+                .build())))
+            .model(ChatModel.O1)
+            .build();
+        ChatCompletion chatCompletion = client.chat().completions().create(params);        
+        return new String();
+    }
+    
 
     @GetMapping("/greet")
     public String greetUser(@RequestParam( defaultValue = "Guest") String name,
